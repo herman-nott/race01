@@ -11,8 +11,8 @@ Defeat an opponent, reducing his health (HP) to 0 by placing cards on the lines 
 The battlefield consists of three battle lines, one cell for each side:
 
 ```
-  [ P2 (opponent): Left ]   [ P2 (opponent): Center ]   [ P2 (opponent): Right ]
-  [ P1 (player): Left ]   [ P1 (player): Center ]   [ P1 (player): Right ]
+   [ P1: Left ]   [ P1: Center ]   [ P1: Right ]
+   [ P2: Left ]   [ P2: Center ]   [ P2: Right ]
 ```
 
 Each cell can only contain one active card. New cards can only be placed in empty cells.
