@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="/styles/register.css">
+</head>
+<body>
+    <div class="snow-container"></div>
+
+    
+    <h1>Registration</h1>
+
+    <div class="regContainer">
+        <form id="regForm" name="regForm" method="POST" action="/register">
+            <input class="inpt" required type="text" name="login" placeholder="Login" size="30"><br>
+            <input class="inpt" required type="email" name="email" placeholder="E-mail" size="30"><br>
+            <input class="inpt" required type="password" name="pass" placeholder="Password" size="30"><br>
+            <input class="inpt" required type="password" name="confPass" placeholder="Confirm password" size="30"><br>
+            
+            <div class="buttons">
+                <input id="regButton" type="submit" value="Register">
+                <a id="loginLink" href="/login">Login</a>
+            </div>
+            
+            <p id="error"></p>
+        </form>
+    </div>
+
+    <script>
+        const regForm = document.forms.regForm;
+
+        regForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = {
+                login: form.login.value,
+                email: form.email.value,
+                password_hash: form.pass.value,
+                confPass: form.confPass.value,
+                avatar_url: "avatar.png"
+            };
+
+            const errorElem = document.getElementById('error');
+
+            if (data.password_hash !== data.confPass) {
+                errorElem.textContent = "Passwords do not match!";
+                return;
+            }
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                errorElem.textContent = result.message;
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = '/main-menu';
+                }, 3000);
+            } else {
+                errorElem.textContent = result.message;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+    <h1>Login</h1>
+
+    <div class="loginContainer">
+        <form id="loginForm" name="loginForm" method="POST" action="/login">
+            <input class="inpt" required type="text" name="login" placeholder="Login or E-mail" size="25"><br>
+            <input class="inpt" required type="password" name="pass" placeholder="Password" size="25"><br>
+            
+            <div class="buttons">
+                <input id="loginButton" type="submit" value="Login">
+                <a id="registerLink" href="/register">Create an account</a>
+            </div>
+            
+            <p id="error"></p>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorP = document.getElementById('error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const loginOrEmail = form.login.value.trim();
+            const password_hash = form.pass.value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ loginOrEmail, password_hash })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.href = '/main-menu';
+            } else {
+                errorP.textContent = result.message || 'Login failed';
+            }
+        });
+    </script>
+</body>
+</html>
