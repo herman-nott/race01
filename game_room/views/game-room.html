@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Room</title>
+    <link rel="stylesheet" href="/styles/game-room.css">
+</head>
+<body>
+    <h1>Game Room</h1>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const roomId = params.get('room');
+        console.log('Joined room:', roomId);
+    </script>
+</body>
+</html>

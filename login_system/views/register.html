@@ -40,7 +40,7 @@
                 email: form.email.value,
                 password_hash: form.pass.value,
                 confPass: form.confPass.value,
-                avatar_url: "avatar.png"
+                avatar_url: "avatars/default_avatar.png"
             };
 
             const errorElem = document.getElementById('error');
@@ -62,9 +62,9 @@
                 errorElem.textContent = result.message;
                 form.reset();
 
-                setTimeout(() => {
-                    window.location.href = '/main-menu';
-                }, 3000);
+                // setTimeout(() => {
+                //     window.location.href = '/main-menu';
+                // }, 3000);
             } else {
                 errorElem.textContent = result.message;
             }

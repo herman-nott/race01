@@ -16,7 +16,7 @@ module.exports = {
         );
     },
 
-    async findByCredentials(loginOrEmail, password) {
+    async findByCredentials(loginOrEmail) {
         const [rows] = await db.query(
             'SELECT * FROM users WHERE login = ? OR email = ?',
             [loginOrEmail, loginOrEmail]

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="/styles/profile.css">
+</head>
+<body>
+    <h1>Profile</h1>
+
+    <div id="profile-view">
+        <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar">
+
+        <p><strong>Login:</strong> <span id="login">User123</span></p>
+        <p><strong>Email:</strong> <span id="email">user@example.com</span></p>
+
+        <button id="edit-btn">Edit Profile</button>
+    </div>
+
+    <div id="profile-edit" style="display: none;">
+        <form id="edit-form" action="/profile" method="POST" enctype="multipart/form-data">
+            <label>
+                New Login:
+                <input type="text" name="login" required>
+            </label>
+            <br>
+            <label>
+                New Email:
+                <input type="email" name="email" required>
+            </label>
+            <br>
+            <label>
+                New Password:
+                <input type="password" name="password">
+            </label>
+            <br>
+            <label>
+                New Avatar:
+                <input type="file" name="avatar">
+            </label>
+            <br>
+            <button type="submit">Save Changes</button>
+            <button type="button" id="cancel-btn">Cancel</button>
+        </form>
+    </div>
+
+    <a href="/main-menu">Back to Main Menu</a>
+
+    <script>
+        const editBtn = document.getElementById('edit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const viewDiv = document.getElementById('profile-view');
+        const editDiv = document.getElementById('profile-edit');
+
+        editBtn.addEventListener('click', () => {
+            viewDiv.style.display = 'none';
+            editDiv.style.display = 'block';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            editDiv.style.display = 'none';
+            viewDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

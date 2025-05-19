@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main menu</title>
+    <link rel="stylesheet" href="/styles/main-menu.css">
+</head>
+<body>
+    <div id="userAvatarContainer">
+        <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar" title="Profile Settings">
+    </div>
+
+    <div class="mainMenuContainer">
+        <h1>Main menu</h1>
+    
+        <button>Start the game</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const startButton = document.querySelector('button');
+        startButton.addEventListener('click', () => {
+            socket.emit('joinQueue');
+        });
+
+        socket.on('startGame', ({ roomId }) => {
+            window.location.href = `/game-room?room=${roomId}`;
+        });
+
+        // 
+        const avatarContainer = document.getElementById('userAvatarContainer');
+        avatarContainer.addEventListener('click', () => {
+            window.location.href = '/profile';
+        });
+    </script>
+</body>
+</html>

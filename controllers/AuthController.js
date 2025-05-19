@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const path = require('path');
 
 module.exports = {
     async register(req, res) {
@@ -13,7 +14,17 @@ module.exports = {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password_hash, saltRounds);
 
-        await User.create({ login, email, password_hash: hashedPassword, avatar_url });
+        const newUser = await User.create({ login, email, password_hash: hashedPassword, avatar_url });
+        const avatarPath = newUser.avatar_url ? path.basename(newUser.avatar_url) : 'default_avatar.png';        
+
+        req.session.user = {
+            id: newUser.id,
+            login: newUser.login,
+            email: newUser.email,
+            avatar_url: avatarPath,
+            password_hash: newUser.password_hash
+        };
+
         res.json({ success: true, message: 'User successfully registered!' });
     },
 
@@ -30,9 +41,11 @@ module.exports = {
         if (isMatch) {
             req.session.loggedIn = true;
             req.session.user = {
+                id: user.id,
                 login: user.login,
-                status: user.status,
-                id: user.id
+                email: user.email,
+                avatar_url: path.basename(user.avatar_url),
+                password_hash: user.password_hash
             };
             res.json({ success: true, message: 'Login successful!' });
         } else {
