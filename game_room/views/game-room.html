@@ -3,16 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Room</title>
+    <title>Game of Thrones Card Battle</title>
     <link rel="stylesheet" href="/styles/game-room.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <h1>Game Room</h1>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="player-info opponent">
+                <div class="avatar-container">
+                    <div class="avatar opponent-avatar">
+                        <img class="img-avatar" id="img-opponent-avatar" src="/avatars/default_avatar.png" alt="User Avatar">
+                    </div>
+                    <div class="hp-bar">
+                        <div class="hp-text">HP: <span id="opponent-hp">30</span>/30</div>
+                        <div class="hp-fill" id="opponent-hp-fill"></div>
+                    </div>
+                </div>
+                <div class="mana-container">
+                    <div class="mana-text">Mana: <span id="opponent-mana">3</span>/10</div>
+                    <div class="mana-crystals" id="opponent-mana-crystals"></div>
+                </div>
+            </div>
+            <div class="game-info">
+                <div class="round-info">Round: <span id="round-number">1</span></div>
+                <div class="timer">Time: <span id="timer">30</span>s</div>
+                <div class="status-message" id="status-message">Waiting for opponent...</div>
+            </div>
+            <div class="player-info player">
+                <div class="avatar-container">
+                    <div class="avatar player-avatar">
+                        <img class="img-avatar" id="img-player-avatar" src="/avatars/default_avatar.png" alt="User Avatar">
+                    </div>
+                    <div class="hp-bar">
+                        <div class="hp-text">HP: <span id="player-hp">30</span>/30</div>
+                        <div class="hp-fill" id="player-hp-fill"></div>
+                    </div>
+                </div>
+                <div class="mana-container">
+                    <div class="mana-text">Mana: <span id="player-mana">3</span>/10</div>
+                    <div class="mana-crystals" id="player-mana-crystals"></div>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const roomId = params.get('room');
-        console.log('Joined room:', roomId);
-    </script>
+        <div class="battlefield">
+            <div class="battlefield-row opponent-field">
+                <div class="field-cell" id="opponent-left"></div>
+                <div class="field-cell" id="opponent-center"></div>
+                <div class="field-cell" id="opponent-right"></div>
+            </div>
+            <div class="battlefield-row player-field">
+                <div class="field-cell" id="player-left"></div>
+                <div class="field-cell" id="player-center"></div>
+                <div class="field-cell" id="player-right"></div>
+            </div>
+        </div>
+
+        <div class="deck-area">
+            <div class="deck">
+                <div class="deck-count">Deck: <span id="deck-count">20</span></div>
+                <div class="deck-image"></div>
+            </div>
+        </div>
+
+        <div class="hand-container">
+            <div class="hand" id="player-hand">
+                <!-- Cards will be dynamically generated -->
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button id="ready-button" class="control-button">Ready</button>
+        </div>
+
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="game-over-message">Game Over</h2>
+                <button id="play-again-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/game-room.js"></script>
 </body>
 </html>
