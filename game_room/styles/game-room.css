@@ -120,7 +120,8 @@ body {
 .mana-crystal {
     width: 12px;
     height: 12px;
-    background-color: #77bbff;
+    background-image: url("/game_room/coin.png");
+    background-color: #eabd40;
     border-radius: 50%;
     opacity: 0.5;
     transition: opacity 0.3s ease;
@@ -132,6 +133,8 @@ body {
 
 .game-info {
     text-align: center;
+    width: 135px;
+    height: 105px;
     padding: 5px 10px;
     background-color: #3a3a3a;
     border-radius: 5px;

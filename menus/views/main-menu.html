@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main menu</title>
     <link rel="stylesheet" href="/styles/main-menu.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet">
 </head>
 <body>
+    <h1>Ice Breaker</h1>
     <div id="userAvatarContainer">
         <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar" title="Profile Settings">
     </div>
@@ -14,14 +18,16 @@
     <div class="mainMenuContainer">
         <h1>Main menu</h1>
     
-        <button>Start the game</button>
+        <button class="menu-button" id="start">Start the game</button>
+        <button class="menu-button">Settings</button>
+        <!-- loading sign -->
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
 
-        const startButton = document.querySelector('button');
+        const startButton = document.getElementById('start');
         startButton.addEventListener('click', () => {
             socket.emit('joinQueue');
         });

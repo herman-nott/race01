@@ -10,3 +10,9 @@ body {
     display: block;
     margin-bottom: 40px;
 }
+
+#frameAvatar{
+    width: 62px;
+    height: 72px;
+    position:absolute;
+}

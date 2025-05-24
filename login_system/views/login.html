@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="/styles/login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Login</h1>
-
     <div class="loginContainer">
+        <h2>Login</h2>
         <form id="loginForm" name="loginForm" method="POST" action="/login">
             <input class="inpt" required type="text" name="login" placeholder="Login or E-mail" size="25"><br>
             <input class="inpt" required type="password" name="pass" placeholder="Password" size="25"><br>
             
             <div class="buttons">
-                <input id="loginButton" type="submit" value="Login">
+                 <button id="loginButton" type="submit">Login</button>
                 <a id="registerLink" href="/register">Create an account</a>
             </div>
             

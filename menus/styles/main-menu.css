@@ -1,5 +1,12 @@
 body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-image: url("/backgrounds/main.png");
+    background-color: rgba(71, 79, 87, 0.7); 
+    background-blend-mode: darken;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: "Iceberg", sans-serif;
+    font-size: 1.5em;
 }
 
 #userAvatarContainer {

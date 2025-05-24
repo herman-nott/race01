@@ -1,3 +1,118 @@
 body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* full viewport height */
+    margin: 0;
+    font-family: "Iceberg", sans-serif;
+    background-image: url("/backgrounds/login.jpg");
+    
+    background-blend-mode: darken;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-size: 1.5em;
+}
+/*
+.loginContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color:rgb(51, 64, 77, 0.7);
+    width:420px;
+    border-radius: 15px;
+}*/
+
+.loginContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, rgba(99, 109, 120, 0.8), rgba(62, 67, 73, 0.8));
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    width: 420px;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    border: 2px solid #a6a6a6;
+    border-image: linear-gradient(to right, #999, #555, #999) 1;
+}
+h2{
+    color: rgb(210, 206, 206);
+    font-size: 2.5em;
+    text-align: center;
+    margin: 20px;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.inpt{
+    font-family: "Iceberg", sans-serif;
+    background-color:rgba(202, 212, 224); 
+    height: 2em;
+    width: 100%;
+    justify-content: center;
+    border-radius: 5px;
+    border: 2px solid rgb(132, 136, 152);
+}
+
+.inpt:focus {
+    outline: none;
+    box-shadow: 0 0 10px #c8c8cb, 0 0 5px #b9b8bc inset;
+}
+
+#loginForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline:30px;
+}
+
+.buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+#loginButton,
+#registerLink{
+    display: flex;
+    font-size: 1em;
+    width: 3.5em;
+    margin: 10px;
+    padding: 5px;
+     background: linear-gradient(to bottom, #8b0000, #5c0000); 
+    color: whitesmoke;
+    border-radius: 5px;
+    border: 2px solid darkred;
+    cursor: pointer;
+    text-align: center;
+    /*transition: 
+        background-color 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.3s ease;*/
+        box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 -1px 1px rgba(255,255,255,0.1);
+    transition: all 0.2s ease-in-out;
+    font-family: "Iceberg", sans-serif;
+}
+
+#registerLink{
+    text-decoration: none;
+    width: 7.5em;
+    font-family: inherit;
+}
+
+#loginButton:hover,
+#registerLink:hover {
+    background-color: darkred;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#loginButton:active,
+#registerLink:active {
+    transform: scale(0.97);
+    background-color: maroon;
 }
