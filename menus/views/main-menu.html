@@ -11,8 +11,15 @@
 </head>
 <body>
     <h1>Ice Breaker</h1>
-    <div id="userAvatarContainer">
+    <div id="userInfoContainer">
         <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar" title="Profile Settings">
+
+        <p>Welcome <span>User</span></p>
+
+        <p>Wins: <span>0</span></p>
+        <p>Losses: <span>0</span></p>
+
+        <button id="openProfileEdit">Change</button>
     </div>
 
     <div class="mainMenuContainer">
@@ -21,6 +28,30 @@
         <button class="menu-button" id="start">Start the game</button>
         <button class="menu-button">Settings</button>
         <!-- loading sign -->
+    </div>
+
+    <div id="overlay" class="overlay hidden"></div>
+
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm" enctype="multipart/form-data" method="POST">
+                <label>
+                    Login: <input type="text" name="login" required>
+                </label><br>
+                <label>
+                    Email: <input type="email" name="email" required>
+                </label><br>
+                <label>
+                    Password: <input type="password" name="password">
+                </label><br>
+                <label>
+                    Avatar: <input type="file" name="avatar">
+                </label><br>
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -37,9 +68,35 @@
         });
 
         // 
-        const avatarContainer = document.getElementById('userAvatarContainer');
-        avatarContainer.addEventListener('click', () => {
-            window.location.href = '/profile';
+        // const avatarContainer = document.getElementById('userAvatarContainer');
+        // avatarContainer.addEventListener('click', () => {
+        //     window.location.href = '/profile';
+        // });
+
+        // Opening/closing a modal window
+        const openBtn = document.getElementById('openProfileEdit');
+        const modal = document.getElementById('profileModal');
+        const closeBtn = document.getElementById('closeModal');
+
+        openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('visible');
+                overlay.classList.add('visible');
+            }, 10);
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('visible');
+            overlay.classList.remove('visible');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }, 1200);
         });
     </script>
 </body>
