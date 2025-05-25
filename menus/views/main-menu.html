@@ -32,11 +32,17 @@
              <h1>Snow Breaker</h1>
             <button class="menu-button" id="start">Start the game</button>
             <button class="menu-button">Settings</button>
-            <!-- loading sign -->
         </div>
     </div>
 
     <div id="overlay" class="overlay hidden"></div>
+
+    <div id="loadingOverlay" class="hidden">
+        <div class="loader-wrapper">
+            <div class="loader"></div>
+            <p class="loading-text">Waiting for another player...</p>
+        </div>
+    </div>
 
     <div id="profileModal" class="modal hidden">
         <div class="modal-content">
@@ -59,11 +65,14 @@
         const socket = io();
 
         const startButton = document.getElementById('start');
+        const loadingOverlay = document.getElementById('loadingOverlay');
         startButton.addEventListener('click', () => {
+            loadingOverlay.classList.remove('hidden');
             socket.emit('joinQueue');
         });
 
         socket.on('startGame', ({ roomId }) => {
+            loadingOverlay.classList.add('hidden');
             window.location.href = `/game-room?room=${roomId}`;
         });
 
@@ -94,18 +103,6 @@
         });
 
         //
-        //document.querySelectorAll('.edit-btn').forEach(editBtn => {
-        //    editBtn.addEventListener('click', () => {
-        //        const fieldContainer = editBtn.closest('.profile-field');
-        //        const valueSpan = fieldContainer.querySelector('.field-value');
-        //        const input = fieldContainer.querySelector('.field-input');
-//
-        //        valueSpan.classList.add('hidden');
-        //        input.classList.remove('hidden');
-        //        input.focus();
-        //    });
-        //});
-
         const editBtn = document.querySelector('.edit-btn');
         const input = document.querySelector('.field-input');
         const span = document.querySelector('.field-value');
