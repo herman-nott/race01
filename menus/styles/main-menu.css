@@ -7,32 +7,103 @@ body {
     background-size: cover;
     font-family: "Iceberg", sans-serif;
     font-size: 1.5em;
+    color: rgb(210, 206, 206);
+}
+/*snow*/
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
-#userInforContainer {
+h1 {
+    background: linear-gradient(to right, #5451b5, #b1c0ed,#c2cdee,#b1c0ed, #5451b5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3.5em;
+    text-align: center;
+    margin: 20px;
+    text-shadow: 1px 1px 4px #00000033; /* Optional for subtle depth */
+}
+
+.container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 120px;
+}
+
+/*user part*/ 
+
+#userInfoContainer {
+    display: flex;
+    left:0;
+    padding: 100px 0px;
+    align-items: center;
+    width: 300px;
+    height: 100%;
+    flex-direction: column;
     padding: 10px;
+    background-color: rgba(58, 57, 71, 0.7);
+}
+
+#frame {
+    position: relative;
+    width: 120px;
+    height: 140px;
 }
 
 #userAvatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: block;
-    margin-bottom: 40px;
+    position: absolute;
+    width: 70%;
+    height: 90%;
+    object-fit: cover;
+    left: 15px;
+
+    clip-path: ellipse(63% 63% at 51% 67%);
 }
 
-.mainMenuContainer {
-    padding: 0 10px 10px 10px;
+#frameImage {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
 }
 
 #openProfileEdit {
     cursor: pointer;
+    width: 70%;
+}
+
+/*menu*/
+#mainMenuContainer {
+    padding: 0 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Modal window */
+
+.hidden {
+    display: none;
+}
+
+.profile-field {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .modal {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(98, 107, 125, 0.719);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -92,4 +163,50 @@ body {
 .overlay.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+/*buttons*/
+
+button {
+    font-size: 1em;
+    margin: 10px;
+    padding: 5px 15px;
+    background: linear-gradient(to bottom, #8b0000, #5c0000);
+    color: #f5f5f5;
+    border: 2px solid darkred;
+    border-radius: 7px;
+    font-family: inherit;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 -1px 1px rgba(255,255,255,0.1);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.menu-button{
+    width: 10em;
+    background: linear-gradient(to bottom, #29387a, #1d138c);
+    border: 2px solid rgb(70, 87, 220);
+}
+
+.menu-button:hover {
+    background: linear-gradient(to bottom, #3a4fbb, #2b2bdb);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 -1px 2px rgba(255,255,255,0.2);
+}
+button:active {
+    transform: scale(0.97);
+    background-color: rgb(54, 26, 182);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6) inset;
+}
+button:hover{
+    background: linear-gradient(to bottom, #a82424, #6e1414);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 -1px 2px rgba(255,255,255,0.2);
+}
+
+button:active {
+    transform: scale(0.97);
+    background-color: maroon;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6) inset;
 }

@@ -10,24 +10,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Ice Breaker</h1>
-    <div id="userInfoContainer">
-        <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar" title="Profile Settings">
+    <canvas id="snow"></canvas>
+    <div class="container">
+        <div id="userInfoContainer">
+            <div id="frame">
+                <img id="userAvatar" src="/avatars/userdef.png" alt="User Avatar">
+                <!-- <img id="userAvatar" src="/avatars/drogon_avatar.jpg" alt="User Avatar"> -->
+                <img id="frameImage" src="/frame/frame.png" alt="frame">
+            </div>
 
-        <p>Welcome <span>User</span></p>
-
-        <p>Wins: <span>0</span></p>
-        <p>Losses: <span>0</span></p>
-
-        <button id="openProfileEdit">Change</button>
-    </div>
-
-    <div class="mainMenuContainer">
-        <h1>Main menu</h1>
+            <p>Welcome <span>User</span></p>
     
-        <button class="menu-button" id="start">Start the game</button>
-        <button class="menu-button">Settings</button>
-        <!-- loading sign -->
+            <p>Wins: <span>0</span></p>
+            <p>Losses: <span>0</span></p>
+    
+            <button id="openProfileEdit">Change</button>
+        </div>
+    
+        <div id="mainMenuContainer">
+            <!-- <h2>Main menu</h2> -->
+             <h1>Snow Breaker</h1>
+            <button class="menu-button" id="start">Start the game</button>
+            <button class="menu-button">Settings</button>
+            <!-- loading sign -->
+        </div>
     </div>
 
     <div id="overlay" class="overlay hidden"></div>
@@ -36,24 +42,18 @@
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
             <h2>Edit Profile</h2>
-            <form id="editProfileForm" enctype="multipart/form-data" method="POST">
-                <label>
-                    Login: <input type="text" name="login" required>
-                </label><br>
-                <label>
-                    Email: <input type="email" name="email" required>
-                </label><br>
-                <label>
-                    Password: <input type="password" name="password">
-                </label><br>
-                <label>
-                    Avatar: <input type="file" name="avatar">
-                </label><br>
+            <form form id="editProfileForm" method="POST" action="/main-menu">
+                <div class="profile-field">
+                    <label>Login:<input class="field-input hidden" type="text" name="login" value=""></label>
+                    <span class="field-value" id="loginValue">User</span>
+                    <button class="edit-btn" type="button">&#128393;</button>
+                </div>
+
                 <button type="submit">Save Changes</button>
             </form>
         </div>
     </div>
-
+    <script src="/snow/snow.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
