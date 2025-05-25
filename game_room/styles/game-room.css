@@ -1,7 +1,5 @@
 body {
     background-image: url("/backgrounds/login.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
     font-family: "Iceberg", sans-serif;
     background-color: #1a1a1a;
     color: #e0e0e0;
@@ -10,6 +8,9 @@ body {
     display: flex;
     justify-content: center;
     min-height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .game-container {
@@ -48,16 +49,16 @@ body {
 }
 
 .avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background-color: #777;
     border: 3px solid #aaa;
 }
 
 .img-avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     cursor: pointer;
     display: block;
@@ -181,7 +182,7 @@ body {
 
 .field-cell {
     width: 32%;
-    height: 120px;
+    height: 130px;
     background-color: #444;
     border-radius: 5px;
     display: flex;
@@ -211,8 +212,8 @@ body {
 }
 
 .deck-image {
-    width: 70px;
-    height: 90px;
+    width: 90px;
+    height: 70px;
     background-color: #333;
     border: 2px solid #555;
     border-radius: 5px;
@@ -222,6 +223,33 @@ body {
 .deck-count {
     font-size: 14px;
     color: #aaa;
+}
+
+/* Game Controls */
+.game-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.control-button {
+    padding: 5px 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.control-button:hover {
+    background-color: #45a049;
+}
+
+.control-button:disabled {
+    background-color: #777;
+    cursor: not-allowed;
 }
 
 /* Hand Container */
@@ -389,33 +417,6 @@ body {
 
 .damaged {
     animation: damage 0.5s ease-in-out;
-}
-
-/* Game Controls */
-.game-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-
-.control-button {
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.control-button:hover {
-    background-color: #45a049;
-}
-
-.control-button:disabled {
-    background-color: #777;
-    cursor: not-allowed;
 }
 
 /* Game Over Modal */
