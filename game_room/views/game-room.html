@@ -16,7 +16,8 @@
                         <img class="img-avatar" id="img-opponent-avatar" src="/avatars/default_avatar.png" alt="User Avatar">
                     </div>
                     <div class="hp-bar">
-                        <div class="hp-text">HP: <span id="opponent-hp">30</span>/30</div>
+                        <!-- <div class="hp-text">HP: <span id="opponent-hp">30</span>/30</div> -->
+                          <div class="hp-text"><span id="opponent-hp">30</span>/30</div>
                         <div class="hp-fill" id="opponent-hp-fill"></div>
                     </div>
                 </div>
@@ -36,12 +37,12 @@
                         <img class="img-avatar" id="img-player-avatar" src="/avatars/default_avatar.png" alt="User Avatar">
                     </div>
                     <div class="hp-bar">
-                        <div class="hp-text">HP: <span id="player-hp">30</span>/30</div>
+                        <div class="hp-text"><span id="player-hp">30</span>/30</div>
                         <div class="hp-fill" id="player-hp-fill"></div>
                     </div>
                 </div>
                 <div class="mana-container">
-                    <!-- <div class="mana-text">Mana: <span id="player-mana">3</span>/10</div> -->
+                    <div class="mana-text">Mana: <span id="player-mana">3</span>/10</div>
                     <div class="mana-crystals" id="player-mana-crystals"></div>
                 </div>
             </div>
@@ -65,11 +66,12 @@
                 <div class="deck-count">Deck: <span id="deck-count">20</span></div>
                 <div class="deck-image"></div>
             </div>
+
+            <div class="game-controls">
+                <button id="ready-button" class="control-button">Ready</button>
+            </div>
         </div>
         
-        <div class="game-controls">
-            <button id="ready-button" class="control-button">Ready</button>
-        </div>
 
         <div class="hand-container">
             <div class="hand" id="player-hand">
