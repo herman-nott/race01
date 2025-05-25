@@ -4,6 +4,7 @@ const path = require('path');
 const router = require('./router');
 const http = require('http');
 const { Server } = require('socket.io');
+const { createAIOpponent } = require('./game_room/scripts/ai-opponent.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,7 @@ const io = new Server(server);
 const PORT = 3000;
 const waitingPlayers = [];
 const gameRooms = new Map(); // Store game room data
+const aiOpponents = new Map(); // Store AI opponents
 
 // Card database - centralized on server
 const cardDatabase = [
@@ -45,6 +47,109 @@ function shuffleArray(array) {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
+}
+
+// Timer management for singleplayer AI timeout
+const singlePlayerTimers = new Map();
+
+function startSinglePlayerTimer(socket) {
+    const timerId = setTimeout(() => {
+        // If still waiting after 4 seconds, create AI opponent
+        const playerIndex = waitingPlayers.indexOf(socket);
+        if (playerIndex !== -1) {
+            waitingPlayers.splice(playerIndex, 1);
+            createSinglePlayerGame(socket);
+        }
+    }, 4000); // 4 second timeout
+    
+    singlePlayerTimers.set(socket.id, timerId);
+}
+
+function clearSinglePlayerTimer(socketId) {
+    const timerId = singlePlayerTimers.get(socketId);
+    if (timerId) {
+        clearTimeout(timerId);
+        singlePlayerTimers.delete(socketId);
+    }
+}
+
+function createSinglePlayerGame(socket) {
+    const roomID = `room-${socket.id}-ai`;
+    
+    socket.join(roomID);
+    
+    // Create game room with AI placeholder
+    const gameRoom = createGameRoomWithAI(roomID, socket);
+    
+    // Create AI opponent
+    const aiOpponent = createAIOpponent(socket, roomID, gameRoom, gameRooms);
+    aiOpponents.set(roomID, aiOpponent);
+    
+    // Get AI player ID
+    const aiPlayerId = Object.keys(gameRoom.players).find(id => id !== socket.id);
+    
+    // console.log(`Created singleplayer game for ${socket.id} vs AI in room ${roomID}`);
+    
+    // Send game start data to human player
+    socket.emit('startGame', {
+        roomId: roomID,
+        playerCount: 2,
+        playerRoles: {
+            [socket.id]: 'player',
+            [aiPlayerId]: 'opponent'
+        },
+        initialHand: gameRoom.players[socket.id].hand,
+        deckCount: gameRoom.deck.length,
+        playerMana: gameRoom.players[socket.id].mana,
+        opponentMana: gameRoom.players[aiPlayerId].mana
+    });
+}
+
+function createGameRoomWithAI(roomID, humanSocket) {
+    // Create shuffled deck for this game
+    const shuffledDeck = shuffleArray(cardDatabase);
+    
+    // Deal initial hands (4 cards each)
+    const humanHand = [];
+    const aiHand = [];
+    
+    for (let i = 0; i < 4; i++) {
+        if (shuffledDeck.length > 0) humanHand.push(shuffledDeck.pop());
+        if (shuffledDeck.length > 0) aiHand.push(shuffledDeck.pop());
+    }
+    
+    // Generate unique AI player ID
+    const aiPlayerId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const gameRoom = {
+        id: roomID,
+        players: {
+            [humanSocket.id]: {
+                socket: humanSocket,
+                role: 'player',
+                hand: humanHand,
+                mana: 3,
+                hp: 30,
+                field: { left: null, center: null, right: null },
+                ready: false
+            },
+            [aiPlayerId]: {
+                socket: null, // AI doesn't have a real socket
+                role: 'opponent',
+                hand: aiHand,
+                mana: 3,
+                hp: 30,
+                field: { left: null, center: null, right: null },
+                ready: false
+            }
+        },
+        deck: shuffledDeck,
+        round: 1,
+        gameOver: false
+    };
+    
+    gameRooms.set(roomID, gameRoom);
+    return gameRoom;
 }
 
 function createGameRoom(roomID, player1, player2) {
@@ -94,10 +199,17 @@ function createGameRoom(roomID, player1, player2) {
 io.on('connection', (socket) => {
     socket.on('joinQueue', () => {
         waitingPlayers.push(socket);
+        
+        // Start timer for singleplayer fallback
+        startSinglePlayerTimer(socket);
 
         if (waitingPlayers.length >= 2) {
             const player1 = waitingPlayers.shift();
             const player2 = waitingPlayers.shift();
+            
+            // Clear timers for both players since they found a match
+            clearSinglePlayerTimer(player1.id);
+            clearSinglePlayerTimer(player2.id);
 
             const roomID = `room-${player1.id}-${player2.id}`;
 
@@ -219,43 +331,60 @@ io.on('connection', (socket) => {
 
         // Increment round
         gameRoom.round++;
-        
-        // Reset ready states and increase mana for both players
+
         const playerIds = Object.keys(gameRoom.players);
-        Object.values(gameRoom.players).forEach(player => {
+        const [id1, id2] = playerIds;
+        const player1 = gameRoom.players[id1];
+        const player2 = gameRoom.players[id2];
+
+        // Reset ready, increase mana, draw cards
+        for (const player of [player1, player2]) {
             player.ready = false;
-            
-            // Increase mana
             player.mana = Math.min(10, player.mana + 1);
-            
-            // Draw card if possible
+
             if (player.hand.length < 4 && gameRoom.deck.length > 0) {
                 const newCard = gameRoom.deck.pop();
                 player.hand.push(newCard);
-                
-                player.socket.emit('newCardDrawn', { 
-                    card: newCard, 
-                    deckCount: gameRoom.deck.length 
-                });
-            }
-        });
 
-        // Send mana updates to each player
-        playerIds.forEach(playerId => {
-            const currentPlayer = gameRoom.players[playerId];
-            const otherPlayerId = playerIds.find(id => id !== playerId);
-            const otherPlayer = gameRoom.players[otherPlayerId];
-            
-            currentPlayer.socket.emit('newRound', {
+                if (player.socket) {
+                    player.socket.emit('newCardDrawn', {
+                        card: newCard,
+                        deckCount: gameRoom.deck.length
+                    });
+                }
+            }
+        }
+
+        // Send round update to human (only if socket exists)
+        if (player1.socket) {
+            player1.socket.emit('newRound', {
                 round: gameRoom.round,
                 deckCount: gameRoom.deck.length,
-                playerMana: currentPlayer.mana,
-                opponentMana: otherPlayer.mana
+                playerMana: player1.mana,
+                opponentMana: player2.mana
             });
-        });
+        }
+
+        if (player2.socket) {
+            player2.socket.emit('newRound', {
+                round: gameRoom.round,
+                deckCount: gameRoom.deck.length,
+                playerMana: player2.mana,
+                opponentMana: player1.mana
+            });
+        }
+
+        // If AI is in this game, trigger its next turn manually
+        const aiOpponent = aiOpponents.get(roomId);
+        if (aiOpponent && aiOpponent.shouldBeActive()) {
+            setTimeout(() => aiOpponent.startAI(), 100);
+        }
     }
 
     socket.on('disconnect', () => {
+        // Clear any pending singleplayer timer
+        clearSinglePlayerTimer(socket.id);
+        
         // Remove from waiting queue
         const index = waitingPlayers.indexOf(socket);
         if (index !== -1) waitingPlayers.splice(index, 1);
@@ -263,8 +392,16 @@ io.on('connection', (socket) => {
         // Handle disconnection from active games
         for (const [roomId, gameRoom] of gameRooms.entries()) {
             if (gameRoom.players[socket.id]) {
-                // Notify other player of disconnection
-                socket.to(roomId).emit('playerDisconnected');
+                // Check if this is an AI game
+                const aiOpponent = aiOpponents.get(roomId);
+                if (aiOpponent) {
+                    // Deactivate AI and clean up
+                    aiOpponent.deactivate();
+                    aiOpponents.delete(roomId);
+                } else {
+                    // Notify other player of disconnection (multiplayer only)
+                    socket.to(roomId).emit('playerDisconnected');
+                }
                 
                 // Clean up game room
                 gameRooms.delete(roomId);
