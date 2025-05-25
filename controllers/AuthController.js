@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = {
     async register(req, res) {
-        const { login, email, password_hash, avatar_url } = req.body;
+        const { login, email, password_hash, avatar_url, wins_counter, losses_counter } = req.body;
         const exists = await User.findByLoginOrEmail(login, email);
         
         if (exists) {
@@ -14,7 +14,7 @@ module.exports = {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password_hash, saltRounds);
 
-        const newUser = await User.create({ login, email, password_hash: hashedPassword, avatar_url });
+        const newUser = await User.create({ login, email, password_hash: hashedPassword, avatar_url, wins_counter: 0, losses_counter: 0 });
         const avatarPath = newUser.avatar_url ? path.basename(newUser.avatar_url) : 'default_avatar.png';        
 
         req.session.user = {
@@ -22,7 +22,9 @@ module.exports = {
             login: newUser.login,
             email: newUser.email,
             avatar_url: avatarPath,
-            password_hash: newUser.password_hash
+            password_hash: newUser.password_hash,
+            wins_counter: wins_counter,
+            losses_counter: losses_counter
         };
 
         res.json({ success: true, message: 'User successfully registered!' });
@@ -45,7 +47,9 @@ module.exports = {
                 login: user.login,
                 email: user.email,
                 avatar_url: path.basename(user.avatar_url),
-                password_hash: user.password_hash
+                password_hash: user.password_hash,
+                wins_counter: user.wins_counter,
+                losses_counter: user.losses_counter
             };
             res.json({ success: true, message: 'Login successful!' });
         } else {

@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     login VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash  VARCHAR(255) NOT NULL,
-    avatar_url VARCHAR(100) NOT NULL
+    avatar_url VARCHAR(100) NOT NULL,
+    wins_counter INT NOT NULL,
+    losses_counter INT NOT NULL
 );

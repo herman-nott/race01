@@ -67,12 +67,6 @@
             window.location.href = `/game-room?room=${roomId}`;
         });
 
-        // 
-        // const avatarContainer = document.getElementById('userAvatarContainer');
-        // avatarContainer.addEventListener('click', () => {
-        //     window.location.href = '/profile';
-        // });
-
         // Opening/closing a modal window
         const openBtn = document.getElementById('openProfileEdit');
         const modal = document.getElementById('profileModal');
@@ -97,6 +91,35 @@
                 modal.classList.add('hidden');
                 overlay.classList.add('hidden');
             }, 1200);
+        });
+
+        //
+        //document.querySelectorAll('.edit-btn').forEach(editBtn => {
+        //    editBtn.addEventListener('click', () => {
+        //        const fieldContainer = editBtn.closest('.profile-field');
+        //        const valueSpan = fieldContainer.querySelector('.field-value');
+        //        const input = fieldContainer.querySelector('.field-input');
+//
+        //        valueSpan.classList.add('hidden');
+        //        input.classList.remove('hidden');
+        //        input.focus();
+        //    });
+        //});
+
+        const editBtn = document.querySelector('.edit-btn');
+        const input = document.querySelector('.field-input');
+        const span = document.querySelector('.field-value');
+
+        editBtn.addEventListener('click', () => {
+            input.classList.toggle('hidden');
+            span.classList.toggle('hidden');
+            if (!input.classList.contains('hidden')) {
+                input.focus();
+            }
+        });
+
+        document.getElementById('editProfileForm').addEventListener('submit', e => {
+            span.textContent = input.value;
         });
     </script>
 </body>

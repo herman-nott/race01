@@ -3,25 +3,20 @@ const path = require('path');
 const fs = require('fs');
 
 module.exports = {
-    async getProfile(req, res) {
-        if (!req.session.user) {
-            return res.redirect('/login');
-        }
+    // async getProfile(req, res) {
+    //     if (!req.session.user) {
+    //         return res.redirect('/login');
+    //     }
 
-        const user = req.session.user;
+    //     const filePath = path.join(__dirname, '../menus/views/main-menu.html');
 
-        const filePath = path.join(__dirname, '../menus/views/profile.html');
+    //     fs.readFile(filePath, 'utf8', (err, html) => {
+    //         if (err) return res.status(500).send('Error loading profile page');            
 
-        fs.readFile(filePath, 'utf8', (err, html) => {
-            if (err) return res.status(500).send('Error loading profile page');            
-            
-            html = html.replace('User123', user.login)
-                       .replace('user@example.com', user.email)
-                       .replace('/avatars/default_avatar.png', `/avatars/${user.avatar_url}`);
-
-            res.send(html);
-        });
-    },
+    //         html = html.replace('>User<', `>${req.session.user.login}<`);
+    //         res.send(html);
+    //     });
+    // },
 
     async updateProfile(req, res) {
         if (!req.session.user) return res.redirect('/login');
