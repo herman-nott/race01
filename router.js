@@ -19,20 +19,14 @@ router.post('/main-menu', async (req, res) => {
     const userId = req.session.user.id;
     const { login } = req.body;
 
-    try {
-        // Проверим, что новый логин не занят другим пользователем
-        const exists = await User.findByLogin(login);
+    try {        const exists = await User.findByLogin(login);
         if (exists && exists.id !== userId) {
             return res.status(400).send('Login already taken');
         }
-
-        // Обновим логин в базе
         await User.updateLogin(userId, login);
-
-        // Обновим логин в сессии
         req.session.user.login = login;
 
-        res.redirect('/main-menu'); // или куда нужно
+        res.redirect('/main-menu'); 
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
@@ -41,7 +35,6 @@ router.post('/main-menu', async (req, res) => {
 
 router.post('/settings/save', (req, res) => {
     const { musicVolume, soundEnabled, theme } = req.body;
-    // можно сохранить настройки в сессии или базе
     req.session.settings = { musicVolume, soundEnabled: !!soundEnabled, theme };
     res.redirect('/settings');
 });
