@@ -3,6 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const router = require('./router');
 const http = require('http');
+const User = require('./models/User');
 const { Server } = require('socket.io');
 const { createAIOpponent } = require('./game_room/scripts/ai-opponent.js');
 
@@ -196,6 +197,20 @@ function createGameRoom(roomID, player1, player2) {
     return gameRoom;
 }
 
+const sessionMiddleware = session({
+    secret: 'secret123',
+    resave: false,
+    saveUninitialized: true
+});
+
+// Use session middleware for both Express and Socket.io
+app.use(sessionMiddleware);
+
+// Share session with Socket.io
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
+
 io.on('connection', (socket) => {
     socket.on('joinQueue', () => {
         waitingPlayers.push(socket);
@@ -380,6 +395,98 @@ io.on('connection', (socket) => {
             setTimeout(() => aiOpponent.startAI(), 100);
         }
     }
+
+    // Game result incrementation
+    socket.on('gameResult', async ({ roomId, winner, loser, isDraw }) => {
+        const gameRoom = gameRooms.get(roomId);
+        if (!gameRoom || gameRoom.gameOver) return;
+
+        gameRoom.gameOver = true; // Prevent duplicate processing
+
+        try {
+            const playerIds = Object.keys(gameRoom.players);
+            const aiOpponent = aiOpponents.get(roomId);
+
+            if (aiOpponent) {
+                gameRoom.gameOver = true; // Prevent duplicate processing
+
+                // Single player vs AI
+                const humanPlayerId = playerIds.find(id => gameRoom.players[id].socket);
+                const humanPlayer = gameRoom.players[humanPlayerId];
+
+                if (humanPlayer && humanPlayer.socket.request.session && humanPlayer.socket.request.session.user) {
+                    const userId = humanPlayer.socket.request.session.user.id;
+
+                    if (isDraw) {
+                        // No stat change
+                    } else if (winner === 'player') {
+                        await User.incrementWins(userId);
+                        humanPlayer.socket.request.session.user.wins_counter = (humanPlayer.socket.request.session.user.wins_counter || 0) + 1;
+                    } else if (winner === 'opponent') {
+                        await User.incrementLosses(userId);
+                        humanPlayer.socket.request.session.user.losses_counter = (humanPlayer.socket.request.session.user.losses_counter || 0) + 1;
+                    }
+                }
+            } else {
+                // Multiplayer game - update both players based on sender's result
+                const senderPlayer = gameRoom.players[socket.id];
+                if (!senderPlayer) return;
+
+                const otherPlayerId = playerIds.find(id => id !== socket.id);
+                const otherPlayer = gameRoom.players[otherPlayerId];
+
+                // Validate both players' sessions
+                if (
+                    otherPlayer?.socket?.request?.session?.user &&
+                    socket?.request?.session?.user &&
+                    !isDraw
+                ) {
+                    const senderUserId = socket.request.session.user.id;
+                    const otherUserId = otherPlayer.socket.request.session.user.id;
+
+                    const senderRole = senderPlayer.role;
+                    const otherRole = otherPlayer.role;
+
+                    const updates = [];
+
+                    // Determine roles and prepare update actions
+                    if (senderRole === winner) {
+                        console.log("checking sender winner");
+                        console.log(senderUserId);
+                        updates.push({ id: senderUserId, action: User.incrementWins, sessionField: 'wins_counter', session: socket.request.session.user });
+                        console.log("sender wins counter");
+                        console.log(otherUserId);
+                        updates.push({ id: otherUserId, action: User.incrementLosses, sessionField: 'losses_counter', session: otherPlayer.socket.request.session.user });
+                        console.log("sender other lose");
+                    } else if (senderRole === loser) {
+                        console.log("checking sender loser");
+                        console.log(senderUserId);
+                        updates.push({ id: senderUserId, action: User.incrementLosses, sessionField: 'losses_counter', session: socket.request.session.user });
+                        console.log("checking sender loser");
+                        console.log(otherUserId);
+                        updates.push({ id: otherUserId, action: User.incrementWins, sessionField: 'wins_counter', session: otherPlayer.socket.request.session.user });
+                        console.log("checking other win");
+                    }
+
+                    // Sort updates to prevent deadlocks
+                    updates.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+                    for (const { id, action, sessionField, session } of updates) {
+                        try {
+                            console.log(`Updating ${sessionField} for user ${id}`);
+                            await action(id);
+                            session[sessionField] = (session[sessionField] || 0) + 1;
+                            console.log(`Updated ${sessionField} for user ${id}`);
+                        } catch (err) {
+                            console.error(`Error updating ${sessionField} for user ${id}:`, err);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error updating game results:', error);
+        }
+    });
 
     socket.on('disconnect', () => {
         // Clear any pending singleplayer timer

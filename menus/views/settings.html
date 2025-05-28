@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting</title>
+    <link rel="stylesheet" href="/styles/settings.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet">
+</head>
+<body>
+    <audio id="bgMusic" src="/audio/menu-music.mp3" autoplay loop></audio>
+    
+    <h1>Settings</h1>
+
+    <button class="back-btn" type="button" onclick="window.location.href='/main-menu'">&larr; Back to Menu</button>
+
+    <div class="container">
+        <form id="settingsForm" method="POST" action="/settings/save">
+            <h2>Sound</h2>
+            <label>
+                Music volume:
+                <input type="range" name="musicVolume" min="0" max="100" value="50">
+            </label>
+            
+            <!-- <label>
+            Sound effects:
+            <input type="checkbox" name="soundEnabled" checked>
+            </label> -->
+    
+            <h2>Account</h2>
+            <button type="button" id="logoutBtn" onclick="window.location.href='/login'">Logout</button>
+    
+            <br><br>
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+
+    <script>
+        const bgMusic = document.getElementById('bgMusic');
+        
+        const volumeSlider = document.querySelector('input[name="musicVolume"]');
+
+        // Установить сохранённое значение из localStorage
+        const savedVolume = localStorage.getItem('musicVolume');
+        if (savedVolume !== null) {
+            bgMusic.volume = parseFloat(savedVolume);
+        }
+
+        if (savedVolume !== null) {
+            volumeSlider.value = savedVolume * 100;
+        }
+
+        volumeSlider.addEventListener('input', () => {
+            const volume = volumeSlider.value / 100;
+
+            // Сохраняем значение
+            localStorage.setItem('musicVolume', volume);
+
+            // Применяем к проигрывателю на других страницах (если открыта в том же окне)
+            if (window.opener && window.opener.updateMusicVolume) {
+                window.opener.updateMusicVolume(volume);
+            }
+        });
+    </script>
+
+</body>
+</html>

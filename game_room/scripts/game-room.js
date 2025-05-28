@@ -511,15 +511,29 @@ function endGame() {
     // Reset combat flag
     combatInProgress = false;
     
+    let winner = null;
+    let isDraw = false;
+    
     if (gameState.playerHP <= 0 && gameState.opponentHP <= 0 && gameState.gameOver === false) {
-        gameState.winner = 'draw';
+        isDraw = true;
         elements.gameOverMessage.textContent = 'Game Over - Draw!';
     } else if (gameState.playerHP <= 0 && gameState.gameOver === false) {
-        gameState.winner = 'opponent';
+        winner = 'opponent';
         elements.gameOverMessage.textContent = 'Game Over - You Lose!';
     } else if (gameState.opponentHP <= 0 && gameState.gameOver === false) {
-        gameState.winner = 'player';
+        winner = 'player';
         elements.gameOverMessage.textContent = 'Game Over - You Win!';
+    }
+    
+    // Only send game result if this client is the designated "player" role
+    // This prevents duplicate processing from both clients
+    if (!gameState.gameOver && isPlayer) {
+        socket.emit('gameResult', {
+            roomId: roomId,
+            winner: winner,
+            loser: winner === 'player' ? 'opponent' : winner === 'opponent' ? 'player' : null,
+            isDraw: isDraw
+        });
     }
     
     gameState.gameOver = true;

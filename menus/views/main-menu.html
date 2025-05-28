@@ -10,11 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet">
 </head>
 <body>
+    <audio id="bgMusic" src="/audio/menu-music.mp3" autoplay loop></audio>
+
+    <button id="toggleMusic">🔊</button>
+
     <canvas id="snow"></canvas>
     <div class="container">
         <div id="userInfoContainer">
             <div id="frame">
-                <img id="userAvatar" src="/avatars/userdef.png" alt="User Avatar">
+                <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar">
                 <!-- <img id="userAvatar" src="/avatars/drogon_avatar.jpg" alt="User Avatar"> -->
                 <img id="frameImage" src="/frame/frame.png" alt="frame">
             </div>
@@ -31,7 +35,7 @@
             <!-- <h2>Main menu</h2> -->
              <h1>Snow Breaker</h1>
             <button class="menu-button" id="start">Start the game</button>
-            <button class="menu-button">Settings</button>
+            <button class="menu-button" onclick="window.location.href='/settings'">Settings</button>
         </div>
     </div>
 
@@ -48,11 +52,16 @@
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
             <h2>Edit Profile</h2>
-            <form form id="editProfileForm" method="POST" action="/main-menu">
+            <form form id="editProfileForm" method="POST" action="/main-menu" enctype="multipart/form-data" >
                 <div class="profile-field">
                     <label>Login:<input class="field-input hidden" type="text" name="login" value=""></label>
                     <span class="field-value" id="loginValue">User</span>
                     <button class="edit-btn" type="button">&#128393;</button>
+                </div>
+
+                <div class="profile-field">
+                    <label>Change avatar:<input class="field-input hidden" type="text" name="login" value=""></label>
+                    <input type="file" id="avatarInput" accept="image/*">
                 </div>
 
                 <button type="submit">Save Changes</button>
@@ -118,6 +127,45 @@
         document.getElementById('editProfileForm').addEventListener('submit', e => {
             span.textContent = input.value;
         });
+
+        //
+        const bgMusic = document.getElementById('bgMusic');
+        const toggleBtn = document.getElementById('toggleMusic');
+
+        let isPlaying = true;
+
+        window.addEventListener('load', () => {
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    isPlaying = false;
+                    toggleBtn.textContent = '🔇';
+                });
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                toggleBtn.textContent = '🔇';
+            } else {
+                bgMusic.play();
+                toggleBtn.textContent = '🔊';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Установить громкость из localStorage
+        const savedVolume = localStorage.getItem('musicVolume');
+        if (savedVolume !== null) {
+            bgMusic.volume = parseFloat(savedVolume);
+        }
+
+        // Функция для обновления громкости извне
+        window.updateMusicVolume = (value) => {
+            bgMusic.volume = value;
+            localStorage.setItem('musicVolume', value);
+        };
     </script>
 </body>
 </html>

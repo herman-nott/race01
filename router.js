@@ -39,6 +39,22 @@ router.post('/main-menu', async (req, res) => {
     }
 });
 
+router.post('/settings/save', (req, res) => {
+    const { musicVolume, soundEnabled, theme } = req.body;
+    // можно сохранить настройки в сессии или базе
+    req.session.settings = { musicVolume, soundEnabled: !!soundEnabled, theme };
+    res.redirect('/settings');
+});
+
+router.post('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.redirect('/login');
+    });
+});
+
+
+
 router.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'login_system/views/register.html')));
 router.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login_system/views/login.html')));
 router.get('/main-menu', (req, res) => {
@@ -68,6 +84,10 @@ router.get('/main-menu', (req, res) => {
 router.get('/game-room', (req, res) => res.sendFile(path.join(__dirname, 'game_room/views/game-room.html')));
 router.get('/', (req, res) => {
     res.redirect('/login');
+});
+router.get('/settings', (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    res.sendFile(path.join(__dirname, 'menus/views/settings.html'));
 });
 
 module.exports = router;
