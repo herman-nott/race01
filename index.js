@@ -3,7 +3,6 @@ const session = require('express-session');
 const path = require('path');
 const router = require('./router');
 const http = require('http');
-const User = require('./models/User');
 const { Server } = require('socket.io');
 const { createAIOpponent } = require('./game_room/scripts/ai-opponent.js');
 
@@ -18,26 +17,29 @@ const aiOpponents = new Map(); // Store AI opponents
 
 // Card database - centralized on server
 const cardDatabase = [
-    { id: 1, name: "Jon Snow", attack: 5, defense: 7, cost: 2, image: "/cards/card1.png" },
-    { id: 2, name: "Tyrion Lannister", attack: 3, defense: 4, cost: 1, image: "/cards/card1.png" },
-    { id: 3, name: "Daenerys Targaryen", attack: 6, defense: 5, cost: 3, image: "/cards/card1.png" },
-    { id: 4, name: "Arya Stark", attack: 4, defense: 3, cost: 2, image: "/cards/card1.png" },
-    { id: 5, name: "Cersei Lannister", attack: 2, defense: 5, cost: 2, image: "/cards/card1.png" },
-    { id: 6, name: "Jaime Lannister", attack: 5, defense: 5, cost: 3, image: "/cards/card1.png" },
-    { id: 7, name: "Brienne of Tarth", attack: 4, defense: 8, cost: 3, image: "/cards/card1.png" },
-    { id: 8, name: "Robb Stark", attack: 4, defense: 2, cost: 2, image: "/cards/card1.png" },
-    { id: 9, name: "Joffrey Baratheon", attack: 2, defense: 3, cost: 1, image: "/cards/card1.png" },
-    { id: 10, name: "Theon Greyjoy", attack: 3, defense: 3, cost: 2, image: "/cards/card1.png" },
-    { id: 11, name: "The Mountain", attack: 8, defense: 6, cost: 4, image: "/cards/card1.png" },
-    { id: 12, name: "The Hound", attack: 7, defense: 5, cost: 3, image: "/cards/card1.png" },
-    { id: 13, name: "Ned Stark", attack: 5, defense: 4, cost: 2, image: "/cards/card1.png" },
-    { id: 14, name: "Khal Drogo", attack: 7, defense: 4, cost: 3, image: "/cards/card1.png" },
-    { id: 15, name: "Jorah Mormont", attack: 4, defense: 6, cost: 3, image: "/cards/card1.png" },
-    { id: 16, name: "Sansa Stark", attack: 2, defense: 4, cost: 2, image: "/cards/card1.png" },
-    { id: 17, name: "Petyr Baelish", attack: 3, defense: 2, cost: 1, image: "/cards/card1.png" },
-    { id: 18, name: "Night King", attack: 8, defense: 8, cost: 5, image: "/cards/card1.png" },
-    { id: 19, name: "White Walker", attack: 6, defense: 3, cost: 2, image: "/cards/card1.png" },
-    { id: 20, name: "Dragon", attack: 9, defense: 7, cost: 5, image: "/cards/card1.png" }
+    { id: 1, name: "Arya Stark", attack: 4, defense: 3, cost: 2, image: "/cards/card_arya.png" },
+    { id: 2, name: "Brienne of Tarth", attack: 2, defense: 3, cost: 1, image: "/cards/card_briena.png" },
+    { id: 3, name: "Cersei Lannister", attack: 4, defense: 3, cost: 3, image: "/cards/card_cersei.png" },
+    { id: 4, name: "Daenerys Targaryen", attack: 5, defense: 4, cost: 3, image: "/cards/card_daeneris.png" },
+    { id: 5, name: "Khal Drogo", attack: 6, defense: 4, cost: 4, image: "/cards/card_drogo.png" },
+    { id: 6, name: "Jaime Lannister", attack: 2, defense: 3, cost: 2, image: "/cards/card_jaime.png" },
+    { id: 7, name: "Margaery Tyrell", attack: 3, defense: 5, cost: 3, image: "/cards/card_margaery.png"},
+    { id: 8, name: "Oberyn Martell", attack: 3, defense: 3, cost: 2, image: "/cards/card_martel.png" },
+    { id: 9, name: "Melisandre", attack: 6, defense: 8, cost: 5, image: "/cards/card_melisandre.png" },
+    { id: 10, name:"Missandei", attack: 1, defense: 1, cost: 1, image: "/cards/card_missandei.png" },
+    { id: 11, name: "The Mountain", attack: 2, defense: 3, cost: 1, image: "/cards/card_mountain.png" },
+    { id: 12, name: "Ned Stark", attack: 4, defense: 3, cost: 2, image: "/cards/card_ned.png" },
+    { id: 13, name: "Olenna Tyrell", attack: 2, defense: 1, cost: 1, image: "/cards/card_olenna.png" },
+    { id: 14, name: "Petyr Baelish", attack: 8, defense: 6, cost: 5, image: "/cards/card_petir.png" },
+    { id: 15, name: "Robb Stark", attack: 6, defense: 5, cost: 4, image: "/cards/card_rob.png" },
+    { id: 16, name: "Robert Baratheon", attack: 5, defense: 7, cost: 4, image: "/cards/card_robert.png" },
+    { id: 17, name: "Sansa Stark", attack: 5, defense: 4, cost: 3, image: "/cards/card_sansa.png" },
+    { id: 18, name: "Jon Snow", attack: 8, defense: 7, cost: 5, image: "/cards/card_snow.png" },
+    { id: 19, name: "Tyrion Lannister", attack: 6, defense: 7, cost: 5, image: "/cards/card_tyrion.png" },
+    { id: 20, name: "Tywin Lannister", attack: 5, defense: 7, cost: 4, image: "/cards/card_tywin.png" }
+    // { id: 20, name: "Night King", attack: 8, defense: 8, cost: 5, image: "/cards/card_night_king.png" },
+    // { id: 21, name: "White Walker", attack: 6, defense: 3, cost: 2, image: "/cards/card_white_walker.png" },
+    // { id: 22, name: "Dragon", attack: 9, defense: 7, cost: 5, image: "/cards/card_dragon.png" }
 ];
 
 // Helper functions
@@ -196,20 +198,6 @@ function createGameRoom(roomID, player1, player2) {
     gameRooms.set(roomID, gameRoom);
     return gameRoom;
 }
-
-const sessionMiddleware = session({
-    secret: 'secret123',
-    resave: false,
-    saveUninitialized: true
-});
-
-// Use session middleware for both Express and Socket.io
-app.use(sessionMiddleware);
-
-// Share session with Socket.io
-io.use((socket, next) => {
-    sessionMiddleware(socket.request, {}, next);
-});
 
 io.on('connection', (socket) => {
     socket.on('joinQueue', () => {

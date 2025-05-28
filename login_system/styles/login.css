@@ -47,9 +47,11 @@ h2{
 
 .inpt{
     font-family: "Iceberg", sans-serif;
-    background-color:rgba(202, 212, 224); 
+    padding-inline: 7px;
+    background-color:rgba(202, 212, 224);
+    color:#6e1414;
     height: 2em;
-    width: 100%;
+    width: 90%;
     justify-content: center;
     border-radius: 5px;
     border: 2px solid rgb(132, 136, 152);

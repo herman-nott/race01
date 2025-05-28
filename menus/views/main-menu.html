@@ -20,20 +20,20 @@
             <div id="frame">
                 <img id="userAvatar" src="/avatars/default_avatar.png" alt="User Avatar">
                 <!-- <img id="userAvatar" src="/avatars/drogon_avatar.jpg" alt="User Avatar"> -->
-                <img id="frameImage" src="/frame/frame.png" alt="frame">
+                <img id="frameImage" src="/frame/frame_user.png" alt="frame">
             </div>
 
-            <p>Welcome <span>User</span></p>
-    
-            <p>Wins: <span>0</span></p>
-            <p>Losses: <span>0</span></p>
-    
+            <p class="menu-info">Welcome <span>User</span>!</p>
+
+            <p class="menu-info">Wins: <span>0</span></p>
+            <p class="menu-info">Losses: <span>0</span></p>
+
             <button id="openProfileEdit">Change</button>
         </div>
     
         <div id="mainMenuContainer">
             <!-- <h2>Main menu</h2> -->
-             <h1>Snow Breaker</h1>
+             <h1>Ice Breaker</h1>
             <button class="menu-button" id="start">Start the game</button>
             <button class="menu-button" onclick="window.location.href='/settings'">Settings</button>
         </div>
@@ -52,16 +52,11 @@
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
             <h2>Edit Profile</h2>
-            <form form id="editProfileForm" method="POST" action="/main-menu" enctype="multipart/form-data" >
+            <form form id="editProfileForm" method="POST" action="/main-menu">
                 <div class="profile-field">
                     <label>Login:<input class="field-input hidden" type="text" name="login" value=""></label>
                     <span class="field-value" id="loginValue">User</span>
                     <button class="edit-btn" type="button">&#128393;</button>
-                </div>
-
-                <div class="profile-field">
-                    <label>Change avatar:<input class="field-input hidden" type="text" name="login" value=""></label>
-                    <input type="file" id="avatarInput" accept="image/*">
                 </div>
 
                 <button type="submit">Save Changes</button>
