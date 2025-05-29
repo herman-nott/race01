@@ -128,6 +128,8 @@ function createCardElement(card, isField = false) {
     return cardDiv;
 }
 
+
+
 // Re-render hand when mana changes to update playability
 function renderPlayerHand() {
     elements.playerHand.innerHTML = '';
@@ -137,6 +139,7 @@ function renderPlayerHand() {
         elements.playerHand.appendChild(cardElement);
     });
 }
+
 
 // Update deck count display
 function updateDeckCount() {
