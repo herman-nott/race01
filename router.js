@@ -46,33 +46,50 @@ router.post('/logout', (req, res) => {
     });
 });
 
-
-
 router.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'login_system/views/register.html')));
 router.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login_system/views/login.html')));
-router.get('/main-menu', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'menus/views/main-menu.html'));
-
+router.get('/main-menu', async (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
 
-    const filePath = path.join(__dirname, 'menus/views/main-menu.html');
+    try {
+        // Use findByLogin method to get fresh data
+        const freshUserData = await User.findByLogin(req.session.user.login);
+        
+        if (!freshUserData) {
+            return res.redirect('/login');
+        }
 
-    fs.readFile(filePath, 'utf8', (err, html) => {
-        if (err) return res.status(500).send('Error loading main menu');
+        // Update session with fresh data
+        req.session.user = {
+            ...req.session.user,
+            wins_counter: freshUserData.wins_counter || 0,
+            losses_counter: freshUserData.losses_counter || 0
+        };
 
-        const user = req.session.user;
+        const filePath = path.join(__dirname, 'menus/views/main-menu.html');
 
-        html = html.replace(/>User</g, `>${user.login}<`);
+        fs.readFile(filePath, 'utf8', (err, html) => {
+            if (err) return res.status(500).send('Error loading main menu');
 
-        html = html.replace(/(<input[^>]*name="login"[^>]*value=")[^"]*(")/, `$1${user.login}$2`);
+            const user = req.session.user;
 
-        html = html.replace(/<p>Wins: <span>\d+<\/span><\/p>/, `<p>Wins: <span>${user.wins_counter || 0}</span></p>`);
-        html = html.replace(/<p>Losses: <span>\d+<\/span><\/p>/, `<p>Losses: <span>${user.losses_counter  || 0}</span></p>`);
+            // Replace username
+            html = html.replace(/>User</g, `>${user.login}<`);
 
-        res.send(html);
-    });
+            // Replace values
+            html = html.replace(/(<input[^>]*name="login"[^>]*value=")[^"]*(")/, `$1${user.login}$2`);
+            html = html.replace(/(<p>Wins: <span>)\d+(<\/span><\/p>)/, `$1${user.wins_counter || 0}$2`);
+            html = html.replace(/(<p>Losses: <span>)\d+(<\/span><\/p>)/, `$1${user.losses_counter || 0}$2`);
+
+            res.send(html);
+        });
+
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).send('Error loading main menu');
+    }
 });
 router.get('/game-room', (req, res) => res.sendFile(path.join(__dirname, 'game_room/views/game-room.html')));
 router.get('/', (req, res) => {

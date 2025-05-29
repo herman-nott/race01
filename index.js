@@ -3,6 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const router = require('./router');
 const http = require('http');
+const User = require('./models/User');
 const { Server } = require('socket.io');
 const { createAIOpponent } = require('./game_room/scripts/ai-opponent.js');
 
@@ -198,6 +199,20 @@ function createGameRoom(roomID, player1, player2) {
     gameRooms.set(roomID, gameRoom);
     return gameRoom;
 }
+
+const sessionMiddleware = session({
+    secret: 'secret123',
+    resave: false,
+    saveUninitialized: true
+});
+
+// Use session middleware for both Express and Socket.io
+app.use(sessionMiddleware);
+
+// Share session with Socket.io
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
 
 io.on('connection', (socket) => {
     socket.on('joinQueue', () => {
@@ -439,21 +454,11 @@ io.on('connection', (socket) => {
 
                     // Determine roles and prepare update actions
                     if (senderRole === winner) {
-                        console.log("checking sender winner");
-                        console.log(senderUserId);
                         updates.push({ id: senderUserId, action: User.incrementWins, sessionField: 'wins_counter', session: socket.request.session.user });
-                        console.log("sender wins counter");
-                        console.log(otherUserId);
                         updates.push({ id: otherUserId, action: User.incrementLosses, sessionField: 'losses_counter', session: otherPlayer.socket.request.session.user });
-                        console.log("sender other lose");
                     } else if (senderRole === loser) {
-                        console.log("checking sender loser");
-                        console.log(senderUserId);
                         updates.push({ id: senderUserId, action: User.incrementLosses, sessionField: 'losses_counter', session: socket.request.session.user });
-                        console.log("checking sender loser");
-                        console.log(otherUserId);
                         updates.push({ id: otherUserId, action: User.incrementWins, sessionField: 'wins_counter', session: otherPlayer.socket.request.session.user });
-                        console.log("checking other win");
                     }
 
                     // Sort updates to prevent deadlocks
@@ -461,10 +466,8 @@ io.on('connection', (socket) => {
 
                     for (const { id, action, sessionField, session } of updates) {
                         try {
-                            console.log(`Updating ${sessionField} for user ${id}`);
                             await action(id);
                             session[sessionField] = (session[sessionField] || 0) + 1;
-                            console.log(`Updated ${sessionField} for user ${id}`);
                         } catch (err) {
                             console.error(`Error updating ${sessionField} for user ${id}:`, err);
                         }
