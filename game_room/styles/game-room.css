@@ -201,7 +201,8 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    margin-bottom: 120px;
+    margin-bottom: 130px;
+    margin-top: 10px;
 }
 
 .deck-image {
@@ -216,6 +217,7 @@ body {
 }
 
 .deck-count {
+    margin: 15px;
     font-size: 14px;
     color: #f8e794;
 }
@@ -296,7 +298,7 @@ body {
 /* Hand Opponent Card Styles */
 #opponent-hand{
     position: absolute;
-    top: -58px;
+    top: -60px;
     margin: 0;
     z-index: 1;
 }
@@ -313,7 +315,7 @@ body {
 .unter-deck{
     position: absolute;
     transform: rotate(-10deg);
-    bottom: 80px;
+    bottom: 120px;
 }
 .first {
     position: relative;
@@ -329,11 +331,11 @@ body {
 }
 /* Card Styles */
 .card {
-    min-width: 100px;
-    min-height: 140px;
+    min-width: 110px;
+    min-height: 150px;
 
     max-width: 140px;
-    max-height: 190px;
+    max-height: 200px;
 
     background-color: #555;
     border-radius: 5px;
